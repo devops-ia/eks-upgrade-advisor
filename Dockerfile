@@ -60,13 +60,19 @@ RUN PLUTO_TARBALL="pluto_${PLUTO_VERSION}_linux_${TARGETARCH}.tar.gz" && \
 # between builds of the same commit).
 RUN npm install -g "@github/copilot@${COPILOT_CLI_VERSION}" && npm cache clean --force
 
-# Non-root user. Home is a dedicated, empty-by-default directory (not /app,
-# which holds the read-only application code) so it can be mounted as a
-# writable emptyDir at runtime — the Copilot CLI persists session state
-# under $HOME, and that's the only runtime write this container needs
-# outside of /output. This is what lets the Helm chart run the pod with
-# readOnlyRootFilesystem: true.
-RUN groupadd -r advisor && useradd -r -g advisor -d /home/advisor -s /sbin/nologin advisor
+# Non-root user, with an explicit UID/GID (not whatever `useradd -r` would
+# pick from the system range) matching the Helm chart's securityContext
+# defaults (runAsUser/fsGroup: 1000) exactly. Without this, the UID this
+# image chown's its directories to at build time and the UID Kubernetes
+# forces the process to run as at runtime (via runAsUser) would silently
+# diverge, causing permission errors. Home is a dedicated, empty-by-default
+# directory (not /app, which holds the read-only application code) so it can
+# be mounted as a writable emptyDir at runtime — the Copilot CLI persists
+# session state under $HOME, and that's the only runtime write this
+# container needs outside of /output. This is what lets the Helm chart run
+# the pod with readOnlyRootFilesystem: true.
+RUN groupadd -r -g 1000 advisor && \
+    useradd -r -u 1000 -g advisor -d /home/advisor -s /sbin/nologin advisor
 
 COPY --from=builder /install /usr/local
 WORKDIR /app
