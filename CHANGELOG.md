@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/devops-ia/eks-upgrade-advisor/compare/v1.0.2...v1.1.0) (2026-09-29)
+
+
+### Features
+
+* resolve real kubeVersion range compatibility instead of UNKNOWN ([42a608a](https://github.com/devops-ia/eks-upgrade-advisor/commit/42a608aef9d635774a910fa91611366cdb461b17))
+
 ## [1.0.2](https://github.com/devops-ia/eks-upgrade-advisor/compare/v1.0.1...v1.0.2) (2026-09-29)
 
 
