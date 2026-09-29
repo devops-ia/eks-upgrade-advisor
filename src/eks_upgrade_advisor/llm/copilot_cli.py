@@ -9,6 +9,7 @@ the CLI has nothing left to do but summarize text it's given.
 from __future__ import annotations
 
 import logging
+import shutil
 import subprocess
 
 from eks_upgrade_advisor.changelog_fetch import ChangelogSource
@@ -60,10 +61,17 @@ class CopilotCliProvider:
             sources_block=sources_block,
         )
 
+        # Resolve to an absolute path (rather than letting subprocess search
+        # PATH implicitly) — satisfies bandit's B607 and fails fast with a
+        # clear error if the image is missing the Copilot CLI.
+        binary_path = shutil.which(self.binary)
+        if binary_path is None:
+            raise RuntimeError(f"required binary not found on PATH: {self.binary}")
+
         logger.info("[CopilotCLI] Step: summarize action=start model=%s", self.model)
         result = subprocess.run(
             [
-                self.binary,
+                binary_path,
                 "--model", self.model,
                 "-p", prompt,
                 "-s",
