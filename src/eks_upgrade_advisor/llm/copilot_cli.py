@@ -17,22 +17,42 @@ from eks_upgrade_advisor.changelog_fetch import ChangelogSource
 logger = logging.getLogger(__name__)
 
 _PROMPT_TEMPLATE = """\
-Eres un asistente de SRE. Resume, en Markdown, los cambios relevantes para un \
-upgrade de Kubernetes/EKS de la version {current_version} a {target_version}.
+You are a Senior Site Reliability Engineer writing the "changelog" section of \
+a formal Kubernetes/EKS upgrade compatibility report, from version \
+{current_version} to {target_version}. The audience is other SREs deciding \
+whether the upgrade is safe to schedule, so the tone must be technical and \
+professional: precise, neutral, no marketing language, no filler sentences.
 
-Usa EXCLUSIVAMENTE el contenido de las fuentes que se incluyen a continuacion. \
-No añadas informacion que no este en ellas. Cita la URL de la fuente en cada \
-punto que menciones.
+Grounding rules (do not deviate):
+- Use ONLY the content under "SOURCES" below. Do not use prior knowledge of \
+Kubernetes/EKS releases, and do not infer or guess anything not explicitly \
+stated in the provided text.
+- Every bullet MUST end with a citation of the exact source URL it came from, \
+in the form `(source: <url>)`. A bullet with no direct textual support in the \
+sources must not be written.
+- If a section has no relevant findings in the sources, write exactly: \
+`- No relevant changes found in the provided sources.` for that section. \
+Never leave a section silently empty and never pad it with speculation.
+- Do not editorialize on business impact, urgency, or recommendations — state \
+facts only. That judgment is made by the human reading the report.
 
-Estructura de salida (nada de texto fuera de esta estructura):
+Output language: write the summary content itself in Spanish (the rest of the \
+report this section is embedded in is in Spanish), while still following \
+every rule above exactly.
 
-## Features nuevas relevantes
-- <punto> (fuente: <url>)
+Output structure (Markdown, nothing outside this structure — no preamble, no \
+closing remarks):
 
-## APIs / funcionalidades deprecadas
-- <punto> (fuente: <url>)
+## Novedades y features relevantes
+- <finding> (source: <url>)
 
---- FUENTES ---
+## APIs y funcionalidades obsoletas o eliminadas
+- <finding> (source: <url>)
+
+## Otros cambios con impacto operativo
+- <finding> (source: <url>)
+
+--- SOURCES ---
 
 {sources_block}
 """
