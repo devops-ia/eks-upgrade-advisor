@@ -8,6 +8,9 @@ on:
 
 jobs:
   auto-assign:
+    # Dependabot PRs run with restricted secret access, so PAT_GITHUB is
+    # never available here — skip rather than fail the check.
+    if: github.actor != 'dependabot[bot]'
     permissions:
       contents: read
       issues: write

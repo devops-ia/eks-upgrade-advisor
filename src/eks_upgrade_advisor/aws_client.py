@@ -58,6 +58,7 @@ class EksClient:
             )
 
         available = {v["addonVersion"] for v in addon_versions[0].get("addonVersions", [])}
+        target_compatible_version: str | None
         if addon.current_version in available:
             status = CompatStatus.COMPATIBLE
             target_compatible_version = addon.current_version

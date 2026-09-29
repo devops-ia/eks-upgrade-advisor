@@ -9,7 +9,11 @@ from eks_upgrade_advisor.models import ReportContext
 
 def render_report(ctx: ReportContext) -> str:
     template_source = resources.files("eks_upgrade_advisor.report").joinpath("template.md.j2").read_text()
-    env = Environment(trim_blocks=True, lstrip_blocks=True)
+    # autoescape is HTML/XML escaping (&, <, > -> entities) and deliberately
+    # off: the output is plain Markdown, not HTML rendered in a browser, so
+    # there is no XSS surface here — enabling it would instead corrupt
+    # ordinary characters (e.g. "&" in a chart name) in the report text.
+    env = Environment(trim_blocks=True, lstrip_blocks=True, autoescape=False)  # nosec B701
     template = env.from_string(template_source)
     return template.render(
         cluster=ctx.cluster,

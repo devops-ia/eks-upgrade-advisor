@@ -7,10 +7,10 @@ dataclasses in discovery/compat/report modules — import from here instead.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 
 
-class CompatStatus(str, Enum):
+class CompatStatus(StrEnum):
     COMPATIBLE = "compatible"
     UPGRADE_REQUIRED = "upgrade_required"
     UNKNOWN = "unknown"

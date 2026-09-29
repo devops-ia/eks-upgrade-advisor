@@ -30,13 +30,14 @@ class ChangelogSource:
 
 def fetch_sources(target_version: str, http_client: httpx.Client | None = None) -> list[ChangelogSource]:
     client = http_client or httpx.Client(timeout=30.0, follow_redirects=True)
-    sources: list[ChangelogSource] = []
 
     k8s_url = K8S_CHANGELOG_URL_TPL.format(version=target_version)
-    sources.append(_fetch(client, k8s_url))
-    sources.append(_fetch(client, EKS_RELEASE_NOTES_URL))
+    fetched: list[ChangelogSource | None] = [
+        _fetch(client, k8s_url),
+        _fetch(client, EKS_RELEASE_NOTES_URL),
+    ]
 
-    return [s for s in sources if s is not None]
+    return [s for s in fetched if s is not None]
 
 
 def _fetch(client: httpx.Client, url: str) -> ChangelogSource | None:

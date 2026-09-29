@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import logging
+import shutil
 import subprocess
 
 from eks_upgrade_advisor.models import DeprecatedApiFinding, HelmApp
@@ -15,11 +16,27 @@ from eks_upgrade_advisor.models import DeprecatedApiFinding, HelmApp
 logger = logging.getLogger(__name__)
 
 
+def _require_binary(name: str) -> str:
+    """Resolve a binary to an absolute path via PATH lookup.
+
+    Both callers of this run inside our own Docker image, where `helm` and
+    `pluto` are pinned by the Dockerfile — resolving up front (instead of
+    letting subprocess search PATH implicitly) is what satisfies bandit's
+    B607 (partial executable path) and fails fast with a clear error if the
+    image is ever missing one of them, rather than a confusing ENOENT deep
+    inside subprocess.
+    """
+    path = shutil.which(name)
+    if path is None:
+        raise RuntimeError(f"required binary not found on PATH: {name}")
+    return path
+
+
 def detect_deprecated_apis(app: HelmApp, target_kube_version: str) -> list[DeprecatedApiFinding]:
     try:
         template = subprocess.run(
             [
-                "helm", "template", app.name,
+                _require_binary("helm"), "template", app.name,
                 app.chart,
                 "--repo", app.repo_url,
                 "--version", app.chart_version,
@@ -33,7 +50,7 @@ def detect_deprecated_apis(app: HelmApp, target_kube_version: str) -> list[Depre
     try:
         pluto_result = subprocess.run(
             [
-                "pluto", "detect", "-",
+                _require_binary("pluto"), "detect", "-",
                 "--target-versions", f"k8s={target_kube_version}",
                 "-o", "json",
             ],
