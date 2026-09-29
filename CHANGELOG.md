@@ -1,3 +1,12 @@
+## [1.0.2](https://github.com/devops-ia/eks-upgrade-advisor/compare/v1.0.1...v1.0.2) (2026-09-29)
+
+
+### Bug Fixes
+
+* harden Docker image and rewrite LLM prompt in English ([08116cd](https://github.com/devops-ia/eks-upgrade-advisor/commit/08116cd7df29d855e4e2816ed240b497b07424bc))
+* pluto checksum verification downloaded a mismatched filename ([54cc3db](https://github.com/devops-ia/eks-upgrade-advisor/commit/54cc3db046b21466b3d15bd61275609be35f2b7f))
+* smoke test never actually ran bash ([d63605f](https://github.com/devops-ia/eks-upgrade-advisor/commit/d63605fc73e271823769744bf30d3263b2dd5e94))
+
 ## [1.0.1](https://github.com/devops-ia/eks-upgrade-advisor/compare/v1.0.0...v1.0.1) (2026-09-29)
 
 
