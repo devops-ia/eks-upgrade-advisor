@@ -18,7 +18,7 @@ LABEL maintainer="devops-ia"
 
 ARG KUBECTL_VERSION=v1.32.0
 ARG HELM_VERSION=v3.16.3
-ARG PLUTO_VERSION=5.20.4
+ARG PLUTO_VERSION=5.24.1
 ARG TARGETARCH
 
 # System deps: curl/unzip for installers, nodejs/npm for the Copilot CLI (npm package @github/copilot).
