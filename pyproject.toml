@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "eks-upgrade-advisor"
-version = "0.1.0"
+version = "1.0.0"
 description = "Generates EKS upgrade compatibility reports by auto-discovering cluster addons and ArgoCD-managed Helm charts"
 requires-python = ">=3.11"
 dependencies = [
