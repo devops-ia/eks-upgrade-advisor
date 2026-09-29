@@ -74,7 +74,12 @@ jobs:
 
       - name: Smoke test — required binaries present
         run: |
-          docker run --rm eks-upgrade-advisor:pr-check bash -c \
+          # --entrypoint is mandatory: the image's own ENTRYPOINT is fixed to
+          # `python -m eks_upgrade_advisor`, so without this override "bash -c
+          # ..." is just appended as ignored argv to that entrypoint instead
+          # of actually running — it "succeeds" at running the app (which
+          # then fails on missing CLUSTER_NAME) rather than checking anything.
+          docker run --rm --entrypoint bash eks-upgrade-advisor:pr-check -c \
             'command -v helm && command -v pluto && command -v copilot'
 
       - name: Smoke test — console script resolves and validates config
