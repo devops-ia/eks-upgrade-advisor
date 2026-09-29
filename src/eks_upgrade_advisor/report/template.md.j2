@@ -1,0 +1,35 @@
+# Actualización EKS {{ cluster.current_version }} → {{ cluster.target_version }}
+
+Cluster: `{{ cluster.name }}` ({{ cluster.region }})
+
+## Addons EKS-managed
+
+| Addon | Versión actual | Versión compatible target | Estado | Fuente |
+|---|---|---|---|---|
+{%- for r in addon_results %}
+| {{ r.addon.name }} | {{ r.addon.current_version }} | {{ r.target_compatible_version or "—" }} | {{ r.status.value }} | {{ r.source_url }} |
+{%- endfor %}
+
+## Apps (ArgoCD)
+
+| App | Namespace | Chart | Versión actual | Estado | Fuente |
+|---|---|---|---|---|---|
+{%- for r in chart_results %}
+| {{ r.app.name }} | {{ r.app.namespace }} | {{ r.app.chart }} | {{ r.app.chart_version }} | {{ r.status.value }} | {{ r.source_url }} |
+{%- endfor %}
+
+## APIs deprecadas / eliminadas
+
+{% if deprecated_apis -%}
+| Chart | API | Kind | Reemplazo | Eliminada en |
+|---|---|---|---|---|
+{%- for f in deprecated_apis %}
+| {{ f.chart_name }} | {{ f.api_version }} | {{ f.kind }} | {{ f.replacement or "—" }} | {{ f.removed_in_version or "—" }} |
+{%- endfor %}
+{%- else -%}
+No se han detectado APIs deprecadas o eliminadas en los charts analizados.
+{%- endif %}
+
+## Features nuevas y deprecaciones (changelog oficial)
+
+{{ changelog_summary }}
