@@ -45,11 +45,15 @@ RUN curl -fsSL "https://get.helm.sh/helm-${HELM_VERSION}-linux-${TARGETARCH}.tar
 
 # pluto (deprecated/removed Kubernetes API detection) — verified against the
 # release's checksums.txt (goreleaser's default, fixed filename per release).
-RUN curl -fsSL "https://github.com/FairwindsOps/pluto/releases/download/v${PLUTO_VERSION}/pluto_${PLUTO_VERSION}_linux_${TARGETARCH}.tar.gz" -o /tmp/pluto.tar.gz && \
+# The tarball is kept under its real asset name (not a generic pluto.tar.gz):
+# checksums.txt references that exact filename, and sha256sum -c resolves it
+# relative to the cwd, so a renamed download would fail with "No such file".
+RUN PLUTO_TARBALL="pluto_${PLUTO_VERSION}_linux_${TARGETARCH}.tar.gz" && \
+    curl -fsSL "https://github.com/FairwindsOps/pluto/releases/download/v${PLUTO_VERSION}/${PLUTO_TARBALL}" -o "/tmp/${PLUTO_TARBALL}" && \
     curl -fsSL "https://github.com/FairwindsOps/pluto/releases/download/v${PLUTO_VERSION}/checksums.txt" -o /tmp/pluto_checksums.txt && \
-    (cd /tmp && grep " pluto_${PLUTO_VERSION}_linux_${TARGETARCH}.tar.gz\$" pluto_checksums.txt | sha256sum -c -) && \
-    tar -xzf /tmp/pluto.tar.gz -C /usr/local/bin pluto && \
-    rm -f /tmp/pluto.tar.gz /tmp/pluto_checksums.txt
+    (cd /tmp && grep " ${PLUTO_TARBALL}\$" pluto_checksums.txt | sha256sum -c -) && \
+    tar -xzf "/tmp/${PLUTO_TARBALL}" -C /usr/local/bin pluto && \
+    rm -f "/tmp/${PLUTO_TARBALL}" /tmp/pluto_checksums.txt
 
 # GitHub Copilot CLI — version pinned (npm install -g without a version
 # resolves to whatever is "latest" at build time, which is not reproducible
