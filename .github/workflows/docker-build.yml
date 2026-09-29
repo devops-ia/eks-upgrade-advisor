@@ -41,14 +41,7 @@ jobs:
         run: mypy src/ --ignore-missing-imports
 
       - name: Security scan (bandit)
-        run: |
-          set +e
-          OUTPUT=$(bandit -r src/ -ll 2>&1)
-          CODE=$?
-          if [ $CODE -ne 0 ]; then
-            echo "::error::$(echo "$OUTPUT" | sed ':a;N;$!ba;s/\n/%0A/g')"
-            exit $CODE
-          fi
+        run: bandit -r src/ -ll -q
 
       - name: Run tests
         run: python -m pytest tests/ -v --cov=eks_upgrade_advisor --cov-report=term-missing
