@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/devops-ia/eks-upgrade-advisor/compare/v1.0.0...v1.0.1) (2026-09-29)
+
+
+### Bug Fixes
+
+* pin pluto to an existing release (v5.24.1) ([9351641](https://github.com/devops-ia/eks-upgrade-advisor/commit/9351641239daf561e614fdad5ea0a36421d6ec47))
+
 # 1.0.0 (2026-09-29)
 
 
